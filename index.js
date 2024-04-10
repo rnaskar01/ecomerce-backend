@@ -10,6 +10,8 @@ const brandsRouters = require ('./routes/Brands')
 const userRouters = require ('./routes/User')
 const authRouters = require ('./routes/Auth')
 const cartRouters = require('./routes/Cart')
+const ordersRouters = require('./routes/Order')
+
 
 //middlewares...
 server.use(cors({
@@ -22,6 +24,8 @@ server.use('/brands',brandsRouters.router)
 server.use('/users',userRouters.router)
 server.use('/auth',authRouters.router)
 server.use('/cart',cartRouters.router)
+server.use('/orders',ordersRouters.router)
+
 
 
 
