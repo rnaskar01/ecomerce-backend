@@ -8,7 +8,7 @@ const router = express.Router();
 // category is already added in base path
 router.post('/signup',createUser)
 .post('/login',passport.authenticate('local'),loginUser)
-.get('/check',checkUser)
+.get('/check',passport.authenticate('jwt'),checkUser)
 
 
 exports.router = router;
