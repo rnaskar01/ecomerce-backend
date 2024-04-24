@@ -5,6 +5,7 @@ const session = require("express-session");
 const passport = require("passport");
 const jwt = require('jsonwebtoken');
 const LocalStrategy = require("passport-local").Strategy;
+const CookieParser = require('cookie-parser');
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const mongoose = require("mongoose");
@@ -18,16 +19,24 @@ const cartRouters = require("./routes/Cart");
 const ordersRouters = require("./routes/Order");
 const { User } = require("./model/User");
 const crypto = require("crypto");
-const { isAuth, sanitizeUser } = require("./services/common");
+const { isAuth, sanitizeUser, cookieExtractor } = require("./services/common");
+const cookieParser = require("cookie-parser");
 
 const SECRET_KEY = 'SECRET_KEY';
 
 // jwt options
+
+
+
+
 const opts = {};
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.jwtFromRequest = cookieExtractor;
 opts.secretOrKey = SECRET_KEY; //ToDo: should not be in the code
 
 //middlewares...
+
+server.use(express.static('build'))
+server.use(cookieParser())
 
 server.use(
   session({
@@ -78,7 +87,7 @@ passport.use(
             });
           }
           const token = jwt.sign(sanitizeUser(user), SECRET_KEY);
-          done(null, token);
+          done(null, {token});
         }
       );
     } catch (err) {
@@ -92,7 +101,7 @@ passport.use(
   new JwtStrategy(opts, async function (jwt_payload, done) {
     console.log({jwt_payload});
     try {
-      const user = await User.findOne({ id: jwt_payload.sub })
+      const user = await User.findById(jwt_payload.id)
       if (user) {
         return done(null, sanitizeUser(user)); // this is called serializer
       } else {

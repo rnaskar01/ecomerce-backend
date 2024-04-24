@@ -1,10 +1,10 @@
 const { Order } = require("../model/Order");
 
 exports.fetchOrdersByUser = async (req,res)=>{
-    const {userId} = req.params;
+    const { id } = req.user;
    // console.log(user);
     try {
-        const orders = await Order.find({user:userId});
+        const orders = await Order.find({user:id});
         
        // console.log("hello"+cartItems);
         res.status(200).json(orders);
