@@ -30,7 +30,7 @@ exports.createUser = async (req, res) => {
                 httpOnly: true,
               })
               .status(201)
-              .json(token);
+              .json({id:doc.id, role:doc.role});
           }
         });
       }
