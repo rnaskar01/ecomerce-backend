@@ -129,38 +129,6 @@ passport.deserializeUser(function (user, cb) {
 });
 
 
-// payments
-
-
-// This is your test secret API key.
-const stripe = require("stripe")('sk_test_51P9ZoASFeo7VtoCi71ef1VLe4pfyD76rIZMaaYkcRMUfjO53Iz9ptSmk0MX0ETGsehh6DQqq6kK8v2qoeqYErjbw0069JBMKxE');
-
-const calculateOrderAmount = (items) => {
-
-  return 1400;
-};
-
-server.post("/create-payment-intent", async (req, res) => {
-  const { items } = req.body;
-  console.log("items backend" + {items});
-
-  // Create a PaymentIntent with the order amount and currency
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: calculateOrderAmount(items),
-    currency: "inr",
-    // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
-    automatic_payment_methods: {
-      enabled: true,
-    },
-  });
-
-  res.send({
-    clientSecret: paymentIntent.client_secret,
-  });
-});
-
-
-
 main().catch((err) => console.log(err));
 
 async function main() {
