@@ -1,3 +1,4 @@
+const dotenv = require ('dotenv')
 const express = require("express");
 const server = express();
 const cors = require("cors");
@@ -5,7 +6,6 @@ const session = require("express-session");
 const passport = require("passport");
 const jwt = require('jsonwebtoken');
 const LocalStrategy = require("passport-local").Strategy;
-const CookieParser = require('cookie-parser');
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const mongoose = require("mongoose");
@@ -22,16 +22,22 @@ const crypto = require("crypto");
 const { isAuth, sanitizeUser, cookieExtractor } = require("./services/common");
 const cookieParser = require("cookie-parser");
 
-const SECRET_KEY = 'SECRET_KEY';
+
+// Emails
+
+
+// async..await is not allowed in global scope, must use a wrapper
+  // send mail with defined transport object
+
+
+ 
+  // Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
 
 // jwt options
 
-
-
-
 const opts = {};
 opts.jwtFromRequest = cookieExtractor;
-opts.secretOrKey = SECRET_KEY; //ToDo: should not be in the code
+opts.secretOrKey = process.env.JWT_SECRET_KEY; //ToDo: should not be in the code
 
 //middlewares...
 
@@ -40,7 +46,7 @@ server.use(cookieParser())
 
 server.use(
   session({
-    secret: "keyboard cat",
+    secret: process.env.SESSION_KEY,
     resave: false, // don't save session if unmodified
     saveUninitialized: false, // don't create session until something stored
   })
@@ -60,6 +66,7 @@ server.use("/users",isAuth(), userRouters.router);
 server.use("/auth", authRouters.router);
 server.use("/cart", isAuth(),cartRouters.router);
 server.use("/orders",isAuth(), ordersRouters.router);
+// Email endpoint
 
 // passport Strategies
 
@@ -86,8 +93,8 @@ passport.use(
               message: "Invalid email id or password",
             });
           }
-          const token = jwt.sign(sanitizeUser(user), SECRET_KEY);
-          done(null, {id:user.id, role:user.role});
+          const token = jwt.sign(sanitizeUser(user), process.env.JWT_SECRET_KEY);
+          done(null, {id:user.id, role:user.role,token});
         }
       );
     } catch (err) {
@@ -99,7 +106,7 @@ passport.use(
 passport.use(
   "jwt",
   new JwtStrategy(opts, async function (jwt_payload, done) {
-    console.log({jwt_payload});
+   // console.log({jwt_payload});
     try {
       const user = await User.findById(jwt_payload.id)
       if (user) {
@@ -132,10 +139,10 @@ passport.deserializeUser(function (user, cb) {
 main().catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/ecommerce");
+  await mongoose.connect(process.env.MONGODB_URL);
   console.log("database connected...");
 }
 
-server.listen(8080, () => {
+server.listen(process.env.PORT, () => {
   console.log("server started...");
 });

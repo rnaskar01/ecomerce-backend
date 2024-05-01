@@ -1,8 +1,9 @@
 const { User } = require("../model/User");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-const { sanitizeUser } = require("../services/common");
-const SECRET_KEY = "SECRET_KEY";
+const { sanitizeUser, sendMail } = require("../services/common");
+require ('dotenv').config()
+
 
 exports.createUser = async (req, res) => {
   // this product we have to get from API body
@@ -23,7 +24,7 @@ exports.createUser = async (req, res) => {
           if (err) {
             res.status(400).json(err);
           } else {
-            const token = jwt.sign(sanitizeUser(doc), SECRET_KEY);
+            const token = jwt.sign(sanitizeUser(doc), process.env.JWT_SECRET_KEY);
             res
               .cookie("jwt", token, {
                 expires: new Date(Date.now() + 3600000),
@@ -41,18 +42,30 @@ exports.createUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
+  const user = req.user;
   res
-  .cookie("jwt", req.user.token, {
+  .cookie("jwt", user.token, {
     expires: new Date(Date.now() + 3600000),
     httpOnly: true,
   })
   .status(201)
-  .json(req.user.token);
+  .json({id:user.id, role:user.role});
 };
 
 exports.checkAuth = async (req, res) => {
   if(req.user){
     res.json(req.user );
+  }else{
+    res.sendStatus(401)
+  }
+};
+
+exports.resetPasswordRequest = async (req, res) => {
+  const resetPage = "http://localhost:3000/reset-password";
+  const subject = "reset password for e-comerce Application"
+  const html = `<p>Click <a href='${resetPage}'>here</a> to Reset Password</p>`
+  if(req.user){
+    sendMail({to:req.body.email,})
   }else{
     res.sendStatus(401)
   }
