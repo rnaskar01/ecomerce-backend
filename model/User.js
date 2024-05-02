@@ -8,7 +8,8 @@ const UserSchema = new Schema({
     addresses: {type: [Schema.Types.Mixed]},
     // ToDo: we can make a seperate scheme for this...
     name: {type: String},
-    salt: Buffer    
+    salt: Buffer,
+    resetPasswordToken:{type:String, default:''}    
 });
 
 const virtual = UserSchema.virtual('id')

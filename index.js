@@ -1,5 +1,5 @@
-const dotenv = require ('dotenv')
-const express = require("express");
+require('dotenv').config();
+const express = require('express');
 const server = express();
 const cors = require("cors");
 const session = require("express-session");
@@ -9,7 +9,6 @@ const LocalStrategy = require("passport-local").Strategy;
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const mongoose = require("mongoose");
-const { createProduct } = require("./controller/product");
 const productsRouters = require("./routes/Products");
 const categoriesRouters = require("./routes/Category");
 const brandsRouters = require("./routes/Brands");

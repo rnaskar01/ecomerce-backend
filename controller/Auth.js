@@ -2,7 +2,6 @@ const { User } = require("../model/User");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { sanitizeUser, sendMail } = require("../services/common");
-require ('dotenv').config()
 
 
 exports.createUser = async (req, res) => {
@@ -61,12 +60,30 @@ exports.checkAuth = async (req, res) => {
 };
 
 exports.resetPasswordRequest = async (req, res) => {
-  const resetPage = "http://localhost:3000/reset-password";
-  const subject = "reset password for e-comerce Application"
-  const html = `<p>Click <a href='${resetPage}'>here</a> to Reset Password</p>`
-  if(req.user){
-    sendMail({to:req.body.email,})
+  const email = req.body.email;
+  const user = await User.findOne({email:email})
+
+  if(user){
+    const token = crypto.randomBytes(64).toString('hex');
+    user.resetPasswordToken = token;
+    await user.save();
+
+    // Also set token in email
+    const resetPageLink = "http://localhost:3000/reset-password?token="+token+'&email='+email;
+    const subject = "reset password for e-comerce Application"
+    const html = `<p>Click <a href='${resetPageLink}'>here</a> to Reset Password</p>`
+  
+  // let send email and a token in the email body so we can verify that user has clicked right link
+  
+    if(email){
+      const response = await sendMail({to:email,subject,html})
+      res.json(response);
+    }else{
+      res.sendStatus(401)
+    }
   }else{
-    res.sendStatus(401)
+    res.json(400);
   }
+
+ 
 };
