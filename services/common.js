@@ -25,10 +25,12 @@ exports.sanitizeUser = (user) =>{
 exports.cookieExtractor = function(req) {
     let token = null;
     if (req && req.cookies) {
+     // console.log("its work"+req.cookies['jwt']);
+
         token = req.cookies['jwt'];
     }
     // ToDo: this is temporary token for testing without cookies
-    //token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Mjk3NGYwY2M1MWZlMjYxMDJjNTAyMyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzEzOTkyOTQ0fQ.SuRe6TBsF7i78_yOl6BukvdFgn0bz5ihNzsmAGiV3KM"
+    token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MzU2YmU1MTBlOTI0ZjU0NDk5ZjFlMSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzE0Nzc3MDYxfQ.yfAFukD8CFo2JGYdK1yFBC2Gs_5dfqj6QzNtqkiGq8Q"
     return token;
   };
 

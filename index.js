@@ -37,12 +37,10 @@ const cookieParser = require("cookie-parser");
 const opts = {};
 opts.jwtFromRequest = cookieExtractor;
 opts.secretOrKey = process.env.JWT_SECRET_KEY; //ToDo: should not be in the code
-
 //middlewares...
 
 // server.use(express.static('build'))
 server.use(cookieParser())
-
 server.use(
   session({
     secret: process.env.SESSION_KEY,
@@ -93,6 +91,7 @@ passport.use(
             });
           }
           const token = jwt.sign(sanitizeUser(user), process.env.JWT_SECRET_KEY);
+          //console.log(token);
           done(null, {id:user.id, role:user.role,token});
         }
       );
