@@ -10,7 +10,7 @@ const UserSchema = new Schema({
     name: {type: String},
     salt: Buffer,
     resetPasswordToken:{type:String, default:''}    
-});
+},{timestamps:true});
 
 const virtual = UserSchema.virtual('id')
 virtual.get(function(){

@@ -10,10 +10,7 @@ const orderSchema = new Schema({
     paymentmethod: {type: String,required: true},
     status: {type: String,default: 'pending'},
     selectedAddress: {type: Schema.Types.Mixed,required: true}
-
-
-
-})
+},{timestamps:true});
 
 const virtual = orderSchema.virtual('id')
 virtual.get(function(){
