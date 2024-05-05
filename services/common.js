@@ -49,8 +49,9 @@ exports.cookieExtractor = function(req) {
 }
 
 
-exports.invoiceTemplate = async function(){
-  return ( `<!DOCTYPE html>
+exports.invoiceTemplate =  function(order){
+  return ( `
+  <!DOCTYPE html>
 <html>
 <head>
 
@@ -165,32 +166,6 @@ exports.invoiceTemplate = async function(){
   <!-- start body -->
   <table border="0" cellpadding="0" cellspacing="0" width="100%">
 
-    <!-- start logo -->
-    <tr>
-      <td align="center" bgcolor="#D2C7BA">
-        <!--[if (gte mso 9)|(IE)]>
-        <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
-        <tr>
-        <td align="center" valign="top" width="600">
-        <![endif]-->
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-          <tr>
-            <td align="center" valign="top" style="padding: 36px 24px;">
-              <a href="https://sendgrid.com" target="_blank" style="display: inline-block;">
-                <img src="./img/paste-logo-light@2x.png" alt="Logo" border="0" width="48" style="display: block; width: 48px; max-width: 48px; min-width: 48px;">
-              </a>
-            </td>
-          </tr>
-        </table>
-        <!--[if (gte mso 9)|(IE)]>
-        </td>
-        </tr>
-        </table>
-        <![endif]-->
-      </td>
-    </tr>
-    <!-- end logo -->
-
     <!-- start hero -->
     <tr>
       <td align="center" bgcolor="#D2C7BA">
@@ -239,24 +214,25 @@ exports.invoiceTemplate = async function(){
               <table border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
                   <td align="left" bgcolor="#D2C7BA" width="60%" style="padding: 12px;font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;"><strong>Order #</strong></td>
-                  <td align="left" bgcolor="#D2C7BA" width="20%" style="padding: 12px;font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;"><strong></strong></td>
                   <td align="left" bgcolor="#D2C7BA" width="20%" style="padding: 12px;font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;"><strong>${order.id}</strong></td>
 
                   </tr>
 
-                <tr>
-                ${order.items.map(item=> `<td align="left" width="75%" style="padding: 6px 12px;font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">${item.title}</td>
-                <td align="left" width="25%" style="padding: 6px 12px;font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">₹${item.quantity}</td>
-                <td align="left" width="25%" style="padding: 6px 12px;font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">₹${item.price}</td>`
-
+                  ${order.items.map(item=> `<tr>
+                <td align="left" width="60%" style="padding: 6px 12px;font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">${item.product.title}</td>
+                <td align="left" width="20%" style="padding: 6px 12px;font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">${item.quantity}</td>
+                <td align="left" width="20%" style="padding: 6px 12px;font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">₹${Math.round(item.product.price*(1-item.product.discountPercentage/100),2)}</td>
+                </tr>`
               )
               }
-            </tr>
+            
 
 
                 <tr>
-                  <td align="left" width="75%" style="padding: 12px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; border-top: 2px dashed #D2C7BA; border-bottom: 2px dashed #D2C7BA;"><strong>Total</strong></td>
-                  <td align="left" width="25%" style="padding: 12px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; border-top: 2px dashed #D2C7BA; border-bottom: 2px dashed #D2C7BA;"><strong>₹${order.totalAmount}</strong></td>
+                  <td align="left" width="60%" style="padding: 12px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; border-top: 2px dashed #D2C7BA; border-bottom: 2px dashed #D2C7BA;"><strong>Total</strong></td>
+                  <td align="left" width="20%" style="padding: 12px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; border-top: 2px dashed #D2C7BA; border-bottom: 2px dashed #D2C7BA;"><strong>${order. totalItems}</strong></td>
+
+                  <td align="left" width="20%" style="padding: px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; border-top: 2px dashed #D2C7BA; border-bottom: 2px dashed #D2C7BA;"><strong>₹${order.totalAmount}</strong></td>
                 </tr>
               </table>
             </td>
@@ -294,23 +270,17 @@ exports.invoiceTemplate = async function(){
                   <tr>
                     <td align="left" valign="top" style="padding-bottom: 36px; padding-left: 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
                       <p><strong>Delivery Address</strong></p>
-                      <p>1234 S. Broadway Ave<br>Unit 2<br>Denver, CO 80211</p>
+                      <p>${order.selectedAddress.name}<br>${order.selectedAddress.street}<br>${order.selectedAddress.city}<br>${order.selectedAddress.state}<br>${order.selectedAddress.
+                        pincode}</p>
+
+                        <p>${order.selectedAddress.phone}</p>
                     </td>
                   </tr>
                 </table>
               </div>
               <!--[if (gte mso 9)|(IE)]>
               </td>
-              <td align="left" valign="top" width="300">
-              <![endif]-->
-              <div style="display: inline-block; width: 100%; max-width: 50%; min-width: 240px; vertical-align: top;">
-                <table align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 300px;">
-                  <tr>
-                    <td align="left" valign="top" style="padding-bottom: 36px; padding-left: 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-                      <p><strong>Billing Address</strong></p>
-                      <p>1234 S. Broadway Ave<br>Unit 2<br>Denver, CO 80211</p>
-                    </td>
-                  </tr>
+            </tr>
                 </table>
               </div>
               <!--[if (gte mso 9)|(IE)]>

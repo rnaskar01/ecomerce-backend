@@ -12,6 +12,10 @@ const productSchema = new Schema({
     category: {type:String , required: true},
     thumbnail: {type:String , required: true},
     images: {type: [String] , required: true},
+    colors:{type: [Schema.Types.Mixed] },
+    sizes:{type: [Schema.Types.Mixed] },
+    highlights:{type: [String] },
+
     deleted: {type:Boolean, default: false},
 })
 
@@ -26,4 +30,4 @@ productSchema.set('toJSON',{
     transform: function (doc,ret) {delete ret._id}
 })
 
-exports.Product = mongoose.model('product',productSchema)
+exports.Product = mongoose.model('products',productSchema)
