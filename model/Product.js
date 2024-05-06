@@ -30,4 +30,4 @@ productSchema.set('toJSON',{
     transform: function (doc,ret) {delete ret._id}
 })
 
-exports.Product = mongoose.model('products',productSchema)
+exports.Product = mongoose.model('product',productSchema)
