@@ -9,7 +9,7 @@ exports.fetchCartByUser = async (req,res)=>{
        //console.log("hello"+cartItems);
         res.status(200).json(cartItems);
     } catch (err) {
-        console.log(err);
+       // console.log(err);
         res.status(400).json(err);
     }
 }

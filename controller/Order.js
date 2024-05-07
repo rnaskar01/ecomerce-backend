@@ -1,6 +1,7 @@
 const { Order } = require("../model/Order");
 const { User } = require("../model/User");
 const { sendMail, invoiceTemplate } = require("../services/common");
+const { Product } = require("../model/Product");
 
 exports.fetchOrdersByUser = async (req,res)=>{
     const { id } = req.user;
@@ -19,6 +20,12 @@ exports.fetchOrdersByUser = async (req,res)=>{
 exports.createOrder= async (req,res)=>{
     // this product we have to get from API body 
     const order = new Order(req.body);
+
+    for(let item of order.items){
+        let product = await Product.findOne({_id:item.product.id})
+        product.$inc('stock',-1*item.quantity);
+        await product.save();
+    }
     try{
         const doc = await order.save();
         const user = await User.findById(order.user);
@@ -63,7 +70,7 @@ exports.updateOrder= async (req,res)=>{
 
 exports.fetchAllOrders= async (req,res)=>{
 
-    //ToDo: we have to try with multiple categories and brand after changes in front-end
+    //: we have to try with multiple categories and brand after changes in front-end
     let query = Order.find({deleted: {$ne:true}});
     let totalOrdersQuery = Order.find({deleted: {$ne:true}});
 

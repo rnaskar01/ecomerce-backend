@@ -20,6 +20,7 @@ const { User } = require("./model/User");
 const crypto = require("crypto");
 const { isAuth, sanitizeUser, cookieExtractor } = require("./services/common");
 const cookieParser = require("cookie-parser");
+const path = require('path')
 
 
 // Emails
@@ -36,10 +37,10 @@ const cookieParser = require("cookie-parser");
 
 const opts = {};
 opts.jwtFromRequest = cookieExtractor;
-opts.secretOrKey = process.env.JWT_SECRET_KEY; //ToDo: should not be in the code
+opts.secretOrKey = process.env.JWT_SECRET_KEY; //: should not be in the code
 //middlewares...
 
-// server.use(express.static('build'))
+server.use(express.static(path.resolve(__dirname,'build')))
 server.use(cookieParser())
 server.use(
   session({

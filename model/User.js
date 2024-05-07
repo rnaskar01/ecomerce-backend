@@ -6,7 +6,7 @@ const UserSchema = new Schema({
     password: {type:Buffer ,required: true},
     role: {type: String,required: true, default: 'user'},
     addresses: {type: [Schema.Types.Mixed]},
-    // ToDo: we can make a seperate scheme for this...
+    // : we can make a seperate scheme for this...
     name: {type: String},
     salt: Buffer,
     resetPasswordToken:{type:String, default:''}    
